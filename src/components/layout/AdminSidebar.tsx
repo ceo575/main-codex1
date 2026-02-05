@@ -3,8 +3,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Archive, Users, School, BarChart, Settings } from "lucide-react"
+import { LayoutDashboard, Archive, Users, School, BarChart, Settings, LogOut } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { signOut } from "next-auth/react"
 
 const sidebarItems = [
     {
@@ -104,6 +105,14 @@ export function AdminSidebar() {
                         <Settings className="w-6 h-6 text-slate-500 group-hover:text-emerald-600" strokeWidth={1.5} />
                         <span className="text-sm font-medium group-hover:text-emerald-600">Cài đặt</span>
                     </Link>
+
+                    <button
+                        onClick={() => signOut()}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 transition-colors group mt-2"
+                    >
+                        <LogOut className="w-6 h-6 text-red-500 group-hover:text-red-700" strokeWidth={1.5} />
+                        <span className="text-sm font-medium group-hover:text-red-700">Đăng xuất</span>
+                    </button>
                 </div>
             </div>
         </div>

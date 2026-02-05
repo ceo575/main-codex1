@@ -3,8 +3,9 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, FileText, Target, User, GraduationCap } from "lucide-react"
+import { LayoutDashboard, FileText, Target, User, GraduationCap, LogOut } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { signOut } from "next-auth/react"
 
 const sidebarItems = [
     {
@@ -77,6 +78,14 @@ export function Sidebar() {
                         <p className="text-xs text-gray-500 truncate">Học sinh lớp 12</p>
                     </div>
                 </div>
+
+                <button
+                    onClick={() => signOut()}
+                    className="w-full mt-4 flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group"
+                >
+                    <LogOut className="h-5 w-5 text-red-500 group-hover:text-red-700" />
+                    Đăng xuất
+                </button>
             </div>
         </div>
     )
