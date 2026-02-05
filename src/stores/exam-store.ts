@@ -46,7 +46,7 @@ interface ExamStore {
 
     // Actions
     setStep: (step: 'upload' | 'edit' | 'complete') => void
-    setUploadProgress: (progress: number) => void
+    setUploadProgress: (progress: number | ((prev: number) => number)) => void
     setExamId: (id: string) => void
     setExamInfo: (info: Partial<ExamInfo>) => void
     setQuestions: (questions: Question[]) => void
@@ -74,7 +74,9 @@ export const useExamStore = create<ExamStore>((set) => ({
 
     setStep: (step) => set({ step }),
 
-    setUploadProgress: (uploadProgress) => set({ uploadProgress }),
+    setUploadProgress: (progress) => set((state) => ({
+        uploadProgress: typeof progress === 'function' ? progress(state.uploadProgress) : progress
+    })),
 
     setExamId: (examId) => set({ examId }),
 
