@@ -22,6 +22,17 @@ export function EditPanel({ question }: EditPanelProps) {
     )
     const [level, setLevel] = useState(question?.level || "")
 
+    const addLink = () => {
+        if (videoLink) {
+            setAddedLinks([...addedLinks, videoLink])
+            setVideoLink("")
+        }
+    }
+
+    const removeLink = (index: number) => {
+        setAddedLinks(addedLinks.filter((_, i) => i !== index))
+    }
+
     if (!question) {
         return (
             <aside className="w-full lg:w-2/5 border-l border-slate-200 bg-slate-50 p-6 flex items-center justify-center text-slate-400">
