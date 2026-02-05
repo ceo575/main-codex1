@@ -5,6 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { authConfig } from "./auth.config";
 
+console.log("DEBUG: auth.ts module loading...");
+console.log("DEBUG: AUTH_SECRET exists:", !!process.env.AUTH_SECRET);
+console.log("DEBUG: DATABASE_URL exists:", !!process.env.DATABASE_URL);
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
     secret: process.env.AUTH_SECRET,
