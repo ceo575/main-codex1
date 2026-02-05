@@ -98,8 +98,9 @@ async function convertWithGemini(text: string): Promise<string> {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // gemini-2.0-flash is available (returned 429 in tests instead of 404)
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Switch to the most stable model name for production
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    console.log("Using Gemini model: gemini-1.5-flash");
 
     const prompt = `Bạn là chuyên gia chuyển đổi nội dung đề thi sang định dạng LaTeX.
 
