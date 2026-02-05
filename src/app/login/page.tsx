@@ -5,11 +5,44 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { Calculator, GraduationCap, Lock, Mail, User } from "lucide-react"
+import { Calculator, GraduationCap, Lock, Mail, User, AlertCircle, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const [userType, setUserType] = useState<"student" | "teacher">("student")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        setError("Email hoặc mật khẩu không chính xác")
+      } else {
+        // Redirect to / to let the root page handle role-based redirection
+        router.push("/")
+        router.refresh()
+      }
+    } catch (err) {
+      setError("Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen w-full flex">
@@ -27,12 +60,12 @@ export default function LoginPage() {
           <div className="bg-white/10 p-6 rounded-3xl backdrop-blur-sm mb-8 shadow-2xl border border-white/10">
             <Calculator className="w-16 h-16 text-emerald-400" />
           </div>
-          
+
           <h1 className="text-4xl xl:text-5xl font-bold text-white mb-6 leading-tight">
             Làm chủ tư duy,<br />
             <span className="text-emerald-400">bứt phá điểm số</span>
           </h1>
-          
+
           <p className="text-gray-300 text-lg leading-relaxed max-w-md">
             Hệ thống học tập thông minh giúp bạn chinh phục mọi thử thách toán học một cách dễ dàng.
           </p>
@@ -52,10 +85,10 @@ export default function LoginPage() {
           </div>
 
           {/* Tabs Switcher */}
-          <Tabs 
-            defaultValue="student" 
-            value={userType} 
-            onValueChange={(v) => setUserType(v as "student" | "teacher")} 
+          <Tabs
+            defaultValue="student"
+            value={userType}
+            onValueChange={(v) => setUserType(v as "student" | "teacher")}
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
@@ -63,25 +96,36 @@ export default function LoginPage() {
               <TabsTrigger value="teacher" className="text-base">Giáo viên</TabsTrigger>
             </TabsList>
 
-            <div className="space-y-6">
+            <form onSubmit={handleLogin} className="space-y-6">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-100 flex items-center gap-2 text-red-600 text-sm animate-in fade-in slide-in-from-top-1">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>{error}</span>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Số điện thoại/Email</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input 
-                      id="email" 
-                      placeholder="name@example.com" 
-                      className="pl-10 h-11"
+                    <Input
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="name@example.com"
+                      className="pl-10 h-11 focus-visible:ring-emerald-500"
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Mật khẩu</Label>
-                    <Link 
-                      href="#" 
+                    <Link
+                      href="#"
                       className="text-sm font-medium text-emerald-600 hover:text-emerald-500 hover:underline"
                     >
                       Quên mật khẩu?
@@ -89,20 +133,34 @@ export default function LoginPage() {
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="pl-10 h-11"
+                    <Input
+                      id="password"
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="pl-10 h-11 focus-visible:ring-emerald-500"
                     />
                   </div>
                 </div>
               </div>
 
-              <Button className="w-full h-11 text-base font-semibold bg-[#059669] hover:bg-[#047857] text-white transition-colors duration-200 shadow-lg shadow-emerald-100">
-                {userType === "student" ? "Vào lớp học" : "Đăng nhập quản lý"}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-11 text-base font-semibold bg-[#059669] hover:bg-[#047857] text-white transition-colors duration-200 shadow-lg shadow-emerald-100 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  userType === "student" ? "Vào lớp học" : "Đăng nhập quản lý"
+                )}
               </Button>
-            </div>
+            </form>
           </Tabs>
 
           {/* Footer Form */}
