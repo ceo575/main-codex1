@@ -14,17 +14,13 @@ export function EditPanel({ question }: EditPanelProps) {
     const [activeTab, setActiveTab] = useState<Tab>('answers')
     const [videoLink, setVideoLink] = useState("")
     const [addedLinks, setAddedLinks] = useState<string[]>([])
-
-    const addLink = () => {
-        if (videoLink) {
-            setAddedLinks([...addedLinks, videoLink])
-            setVideoLink("")
-        }
-    }
-
-    const removeLink = (index: number) => {
-        setAddedLinks(addedLinks.filter((_, i) => i !== index))
-    }
+    const [points, setPoints] = useState(question?.points || 0)
+    const [type, setType] = useState(question?.type || 'multiple_choice')
+    const [correctAnswer, setCorrectAnswer] = useState(
+        question?.type === 'short_answer' ? question.correctAnswer :
+            question?.answers?.find(a => a.isCorrect)?.label || ""
+    )
+    const [level, setLevel] = useState(question?.level || "")
 
     if (!question) {
         return (
@@ -69,7 +65,8 @@ export function EditPanel({ question }: EditPanelProps) {
                                 <input
                                     type="number"
                                     className="w-16 h-8 rounded text-center text-sm font-bold border-none focus:ring-2 focus:ring-blue-400 text-slate-900"
-                                    defaultValue={question.points}
+                                    value={points}
+                                    onChange={(e) => setPoints(Number(e.target.value))}
                                 />
                             </div>
                             <div className="ml-auto flex gap-2">
@@ -83,7 +80,7 @@ export function EditPanel({ question }: EditPanelProps) {
                     {/* Form Content */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
                         <div className="inline-flex items-center bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">
-                            {question.title}: {question.type === 'multiple_choice' ? 'Trắc nghiệm' : question.type === 'true_false' ? 'Đúng/Sai' : 'Tự luận'}
+                            {question.title}: {type === 'multiple_choice' ? 'Trắc nghiệm' : type === 'true_false' ? 'Đúng/Sai' : 'Tự luận'}
                         </div>
 
                         <div className="bg-white border-l-4 border-l-blue-500 rounded border border-slate-200 p-3 shadow-sm">
@@ -96,7 +93,8 @@ export function EditPanel({ question }: EditPanelProps) {
                                     <label className="text-xs font-medium text-slate-500">Loại câu hỏi</label>
                                     <select
                                         className="col-span-2 text-xs border-slate-200 rounded bg-slate-50 text-slate-800 py-1 pl-2 pr-6 focus:ring-blue-500 border-none ring-1 ring-slate-200"
-                                        defaultValue={question.type}
+                                        value={type}
+                                        onChange={(e) => setType(e.target.value as any)}
                                     >
                                         <option value="multiple_choice">Trắc nghiệm</option>
                                         <option value="true_false">Đúng / Sai</option>
@@ -109,10 +107,8 @@ export function EditPanel({ question }: EditPanelProps) {
                                     <input
                                         type="text"
                                         className="col-span-2 text-xs border-slate-200 rounded bg-white text-slate-800 py-1 px-2 focus:ring-blue-500 border-none ring-1 ring-slate-200"
-                                        defaultValue={
-                                            question.type === 'short_answer' ? question.correctAnswer :
-                                                question.answers?.find(a => a.isCorrect)?.label || "Tùy chọn"
-                                        }
+                                        value={correctAnswer}
+                                        onChange={(e) => setCorrectAnswer(e.target.value)}
                                     />
                                 </div>
 
@@ -122,7 +118,8 @@ export function EditPanel({ question }: EditPanelProps) {
                                         type="text"
                                         className="col-span-2 text-xs border-slate-200 rounded bg-white text-slate-800 py-1 px-2 focus:ring-blue-500 border-none ring-1 ring-slate-200"
                                         placeholder="Chương, bài, dạng..."
-                                        defaultValue={question.level}
+                                        value={level}
+                                        onChange={(e) => setLevel(e.target.value)}
                                     />
                                 </div>
 

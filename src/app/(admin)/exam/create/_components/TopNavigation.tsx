@@ -1,9 +1,24 @@
 "use client"
 
-import { ChevronRight, Eye, Save } from "lucide-react"
+import { useState } from "react"
+import { ChevronRight, Eye, Save, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export function TopNavigation() {
+    const [isSaving, setIsSaving] = useState(false)
+    const router = useRouter()
+
+    const handleSave = async () => {
+        setIsSaving(true)
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        setIsSaving(false)
+        toast.success("Đã lưu đề thi thành công vào kho đề thi!")
+        router.push("/admin/exam")
+    }
+
     return (
         <header className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-10 sticky top-0">
             <div className="px-8 py-5 flex items-center justify-between">
@@ -20,9 +35,22 @@ export function TopNavigation() {
                         <Eye className="w-5 h-5" />
                         <span className="hidden sm:inline">Xem trước</span>
                     </Button>
-                    <Button className="flex items-center gap-2 bg-[#10b763] hover:bg-[#0d9651] text-white shadow-lg shadow-emerald-500/30 font-bold">
-                        <Save className="w-5 h-5" />
-                        <span>Lưu vào Kho đề thi</span>
+                    <Button
+                        disabled={isSaving}
+                        onClick={handleSave}
+                        className="flex items-center gap-2 bg-[#10b763] hover:bg-[#0d9651] text-white shadow-lg shadow-emerald-500/30 font-bold min-w-[180px]"
+                    >
+                        {isSaving ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <span>Đang lưu...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Save className="w-5 h-5" />
+                                <span>Lưu vào Kho đề thi</span>
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>

@@ -1,9 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { Question } from "../mockData"
 import { cn } from "@/lib/utils"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { useRouter, useParams } from "next/navigation"
 
 interface AnswerGridProps {
     questions: Question[]
@@ -12,6 +15,20 @@ interface AnswerGridProps {
 }
 
 export function AnswerGrid({ questions, answers, onNavigate }: AnswerGridProps) {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const router = useRouter()
+    const params = useParams()
+    const id = params.id
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true)
+        // Simulate submission
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        setIsSubmitting(false)
+        toast.success("Nộp bài thành công! Đang chuyển hướng đến kết quả...")
+        router.push(`/exam/${id}/result`)
+    }
+
     return (
         <div className="bg-white h-full flex flex-col">
             <div className="p-6 border-b border-slate-100">
@@ -65,8 +82,27 @@ export function AnswerGrid({ questions, answers, onNavigate }: AnswerGridProps) 
             </div>
 
             <div className="p-4 border-t border-slate-100 bg-slate-50 space-y-3">
-                <Button variant="outline" className="w-full border-slate-300 text-slate-600 hover:bg-white hover:text-slate-900 font-bold">Rời khỏi</Button>
-                <Button className="w-full bg-[#059669] hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-200">Nộp bài</Button>
+                <Button
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="w-full border-slate-300 text-slate-600 hover:bg-white hover:text-slate-900 font-bold"
+                >
+                    Rời khỏi
+                </Button>
+                <Button
+                    disabled={isSubmitting}
+                    onClick={handleSubmit}
+                    className="w-full bg-[#059669] hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-200"
+                >
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Đang nộp...
+                        </>
+                    ) : (
+                        "Nộp bài"
+                    )}
+                </Button>
                 <div className="text-[10px] text-center text-slate-400">Vui lòng kiểm tra kỹ bài làm trước khi nộp</div>
             </div>
         </div>
