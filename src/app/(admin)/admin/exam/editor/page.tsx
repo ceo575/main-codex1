@@ -74,6 +74,16 @@ export default function ExamEditorPage() {
         }
     }
 
+    const handleNextStep = () => {
+        if (activeTab === "answers") {
+            setActiveTab("expanded")
+        } else if (activeTab === "expanded") {
+            setActiveTab("info")
+        } else {
+            handleSave()
+        }
+    }
+
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-[#f8fafc] text-slate-900 font-sans">
             {/* Header */}
@@ -86,11 +96,11 @@ export default function ExamEditorPage() {
                     <span className="font-bold text-slate-900">Chỉnh sửa</span>
                 </nav>
                 <Button
-                    className="bg-[#059669] hover:bg-emerald-700 text-white font-medium shadow-sm"
-                    onClick={handleSave}
+                    className="bg-[#059669] hover:bg-emerald-700 text-white font-medium shadow-sm min-w-[100px]"
+                    onClick={handleNextStep}
                     disabled={isSaving}
                 >
-                    {isSaving ? 'Đang lưu...' : 'Hoàn tất'}
+                    {isSaving ? 'Đang lưu...' : (activeTab === "info" ? 'Hoàn tất' : 'Tiếp tục')}
                 </Button>
             </header>
 
