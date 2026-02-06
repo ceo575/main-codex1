@@ -56,6 +56,8 @@ export async function POST(req: NextRequest) {
                 chapter: q.chapter || null,
                 lesson: q.lesson || null,
                 problemType: q.problemType || null,
+                level: q.level || null,
+                tags: q.tags ? JSON.stringify(q.tags) : null,
                 imageBase64: q.imageBase64 || null,
             }))
 
