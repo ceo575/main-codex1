@@ -95,6 +95,8 @@ model Question {
   chapter       String?      // Chapter name
   lesson        String?      // Lesson name  
   problemType   String?      // Problem type classification
+  level         String?      // e.g. "NB", "TH", "VD", "VDC"
+  tags          String?      // JSON string of tags
   imageBase64   String?      // Base64 encoded image (temp solution)
   
   // Relations

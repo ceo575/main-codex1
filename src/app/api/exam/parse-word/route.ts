@@ -34,21 +34,8 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // Parse the Word file using the new advanced parser
-        const questionsData = await parseDocxFile(file)
-
-        // Map to the internal Question type used by frontend store
-        const questions = questionsData.map(q => ({
-            id: `q-${q.index}-${Date.now()}`,
-            content: q.content,
-            type: 'MCQ' as const,
-            options: q.options,
-            correctAnswer: '', // User will fill in editor
-            explanation: q.solution,
-            imageBase64: q.imageBase64,
-            videoUrl: q.video_url,
-            tags: q.tags
-        }));
+        // Parse the Word file - parser now returns standardized format
+        const questions = await parseDocxFile(file)
 
         console.log(`API: Successfully parsed ${questions.length} questions.`);
 

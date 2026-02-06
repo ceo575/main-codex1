@@ -43,26 +43,19 @@ export function PreviewPanel({ questions, selectedId, onSelect }: PreviewPanelPr
                             </div>
                         </div>
 
-                        {/* Content with image if exists */}
+                        {/* Content with placeholders resolved */}
                         <div className="mb-4">
-                            {q.imageBase64 && (
-                                <img
-                                    src={q.imageBase64}
-                                    alt="Question image"
-                                    className="mb-3 max-w-full h-auto rounded border"
-                                />
-                            )}
                             <div
                                 className="text-sm text-slate-700"
                                 style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8' }}
                             >
-                                <LatexContent content={q.content} />
+                                <LatexContent content={q.content} images={q.images} />
                             </div>
                         </div>
 
                         {/* Answers for MCQ */}
                         {q.type === 'MCQ' && q.options && (
-                            <div className="grid grid-cols-1 gap-2">
+                            <div className="grid grid-cols-1 gap-3">
                                 {q.options.map((option, optIndex) => {
                                     const label = String.fromCharCode(65 + optIndex); // A, B, C, D
                                     const isCorrect = q.correctAnswer === label;
@@ -71,25 +64,79 @@ export function PreviewPanel({ questions, selectedId, onSelect }: PreviewPanelPr
                                         <div
                                             key={optIndex}
                                             className={cn(
-                                                "flex items-center border rounded-lg overflow-hidden transition relative",
-                                                isCorrect ? "border-[#059669]/30 bg-emerald-50/50" : "border-slate-200"
+                                                "flex items-center group/opt relative py-2",
+                                                isCorrect ? "text-[#059669]" : "text-slate-700"
                                             )}
                                         >
-                                            <div className="w-10 bg-slate-100 border-r border-slate-200 flex items-center justify-center font-bold text-slate-600 py-2.5 text-sm">
+                                            <div
+                                                className={cn(
+                                                    "size-8 rounded-full border flex items-center justify-center font-bold text-sm mr-3 transition-colors",
+                                                    isCorrect
+                                                        ? "bg-[#059669] text-white border-[#059669] shadow-sm"
+                                                        : "bg-white text-slate-500 border-slate-300 group-hover/opt:border-[#059669]/50 group-hover/opt:text-[#059669]"
+                                                )}
+                                            >
                                                 {label}
                                             </div>
-                                            <div className="px-4 py-2.5 flex-1 text-sm">
-                                                <LatexContent content={option} />
+                                            <div className={cn(
+                                                "flex-1 text-sm font-medium",
+                                                isCorrect ? "font-bold" : ""
+                                            )}>
+                                                <LatexContent content={option} images={q.images} />
                                             </div>
                                             {isCorrect && (
-                                                <div className="absolute bottom-0 right-0">
-                                                    <div className="w-0 h-0 border-l-[24px] border-l-transparent border-b-[24px] border-b-[#059669]"></div>
-                                                    <Check className="absolute bottom-[1px] right-[1px] w-3 h-3 text-white" />
-                                                </div>
+                                                <Check className="w-5 h-5 text-[#059669] ml-2" />
                                             )}
                                         </div>
                                     );
                                 })}
+                            </div>
+                        )}
+
+                        {/* Answers for True/False */}
+                        {q.type === 'TRUE_FALSE' && q.options && (
+                            <div className="overflow-hidden border border-slate-200 rounded-lg">
+                                <table className="w-full text-sm text-slate-700">
+                                    <thead className="bg-slate-50 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                                        <tr>
+                                            <th className="px-4 py-2.5 text-left">Mệnh đề</th>
+                                            <th className="px-4 py-2.5 text-center w-20">Đúng</th>
+                                            <th className="px-4 py-2.5 text-center w-20">Sai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 bg-white">
+                                        {q.options.map((option, optIndex) => {
+                                            const label = String.fromCharCode(97 + optIndex); // a, b, c, d
+                                            const correctAnswers = (q.correctAnswer || "").split(",");
+                                            const isTrueIdx = correctAnswers[optIndex] === "Đ";
+
+                                            return (
+                                                <tr key={optIndex} className="hover:bg-slate-50/50 transition-colors">
+                                                    <td className="px-4 py-3">
+                                                        <span className="font-bold mr-2 text-blue-600 uppercase italic">{label})</span>
+                                                        <LatexContent content={option} images={q.images} />
+                                                    </td>
+                                                    <td className="px-4 py-3 text-center align-middle">
+                                                        <div className={cn(
+                                                            "w-5 h-5 mx-auto rounded-full border flex items-center justify-center",
+                                                            isTrueIdx ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-200"
+                                                        )}>
+                                                            {isTrueIdx && <Check className="w-3 h-3 stroke-[3]" />}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-4 py-3 text-center align-middle">
+                                                        <div className={cn(
+                                                            "w-5 h-5 mx-auto rounded-full border flex items-center justify-center",
+                                                            !isTrueIdx && q.correctAnswer ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-200"
+                                                        )}>
+                                                            {!isTrueIdx && q.correctAnswer && <Check className="w-3 h-3 stroke-[3]" />}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
                         )}
 
@@ -114,7 +161,7 @@ export function PreviewPanel({ questions, selectedId, onSelect }: PreviewPanelPr
                             <div className="mt-4 pt-4 border-t border-slate-200">
                                 <div className="pl-3 border-l-2 border-[#059669] text-sm text-slate-600">
                                     <p className="font-bold text-slate-800 mb-1 text-xs uppercase">Lời giải</p>
-                                    <LatexContent content={q.explanation} />
+                                    <LatexContent content={q.explanation} images={q.images} />
                                 </div>
                             </div>
                         )}
