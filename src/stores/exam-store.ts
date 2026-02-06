@@ -5,6 +5,7 @@ export interface Question {
     content: string
     type: 'MCQ' | 'TRUE_FALSE' | 'SHORT_ANSWER'
     options?: string[] // For MCQ
+    correctOptionIndex?: number // For MCQ (UI state)
     images?: string[] // For placeholders [IMG_0], [IMG_1], etc.
     correctAnswer: string
     explanation?: string

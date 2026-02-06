@@ -6,6 +6,7 @@ export interface Question {
     content: string
     type: 'MCQ' | 'TRUE_FALSE' | 'SHORT_ANSWER'
     options?: string[]
+    correctOptionIndex?: number
     images?: string[]
     correctAnswer: string
     explanation?: string
@@ -402,6 +403,7 @@ function splitQuestions(content: string, imagePool: string[]): Question[] {
             options: redistributedOptions.map(opt => cleanContent(opt)),
             type: type,
             correctAnswer,
+            correctOptionIndex,
             explanation: cleanContent(redistributedSolution),
             images: questionImages,
             level: "", // Init defaults
